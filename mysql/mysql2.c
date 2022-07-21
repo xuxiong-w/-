@@ -9,8 +9,9 @@
 #include<sys/sem.h>
 #include<sys/ipc.h>
 //时间相关头文件
-#include<sys/time.h>
+#include<time.h>
 #include <unistd.h>
+#include <semaphore.h>
 
 /*定义一些数据库连接需要的宏*/
 #define HOST "localhost" /*MySql服务器地址*/
@@ -19,24 +20,11 @@
 #define DATABASE "data_base" /*需要连接的数据库*/
 
 
+pthread_mutex_t mutex;
 static int  line_num=2; //同时两个线程
-int semid;
-struct timeval t1,t2,t3,t4;
+sem_t first;
+sem_t second;
 
-void P(int semid,int index){	//P操作
-    struct sembuf sem;
-    sem.sem_num=index;
-    sem.sem_op=-1;
-    sem.sem_flg=0;
-    semop(semid,&sem,1);
-}
-void V(int semid,int index){	//V操作
-    struct sembuf sem;
-    sem.sem_num=index;
-    sem.sem_op=1;
-    sem.sem_flg=0;
-    semop(semid,&sem,1);
-}
 // 执行sql语句的函数
 void exeSql(char* sql);
 void *takeSql(void* addr);
@@ -48,18 +36,13 @@ void main(){
     }
 */
 void main(){
-    key_t key;
-    key=0;
-    semid=semget(key,1,IPC_CREAT|0666);
-    int arg=1;
-    semctl(semid,0,SETVAL,arg);
-
     char commond[2][100]={"update ta_ble set x = x+1,y=y+1 where id = 1002;",
                           "select * from ta_ble where id=1002;"};
 
     int i;
     int ret=-1;
     pthread_t npid[line_num];
+    pthread_mutex_init(&mutex, NULL);
     for(i=0;i<line_num;i++){	//for循环创建line_num个线程
         //sleep(1);
         ret=-1;
@@ -69,13 +52,12 @@ void main(){
         if(ret)
             printf("%d create fail!\n",i+1);
         else
-            printf("%d create success!\n",i+1);
+            printf("%d create succcess!\n",i+1);
     }
     for(i=0;i<line_num;i++){		//等待线程结束
         pthread_join(npid[i],NULL);
     }
 
-    semctl(semid,0,IPC_RMID,arg);	//信号灯销毁
 
 }
 
@@ -86,20 +68,17 @@ void *takeSql(void *addr){
     int num=0;	//每个线程最多10次操作
     while(1){
         //printf("%s\n",s);
-        P(semid,1);
-        sleep(1);//usleep(500)休眠0.5ms
+        pthread_mutex_lock(&mutex);
+        //sleep(1);
         if(num==10){	//当此时退出
-            V(semid,1);
+            pthread_mutex_unlock(&mutex);
             break;
         }
-        gettimeofday(&t3,NULL);
         exeSql(s);
-        gettimeofday(&t4,NULL);
-        printf("%ld\n",(t2.tv_sec-t1.tv_sec)*1000000 + t2.tv_usec-t1.tv_usec);
-        printf("%ld\n",(t4.tv_sec-t3.tv_sec)*1000000 + t4.tv_usec-t3.tv_usec);
-        printf("No.%d:  %s command finished!\n",num,s);
+
+        printf("No.%d:  %s commond finished!\n",num,s);
         num++;
-        V(semid,1);
+        pthread_mutex_unlock(&mutex);
 
     }
 }
@@ -118,7 +97,6 @@ void exeSql(char* sql){
         printf("数据库连接成功！\n");
         /*设置查询编码为 utf8, 支持中文*/
         mysql_query(&my_connection, "set names utf8");
-        gettimeofday(&t1,NULL);
         res = mysql_query(&my_connection, sql);
         if (res) {
             /*现在就代表执行失败了*/
@@ -154,7 +132,6 @@ void exeSql(char* sql){
                     puts("");
                 }
             }
-            gettimeofday(&t2,NULL);
             /*不要忘了关闭连接*/
             mysql_close(&my_connection);
             mysql_thread_end();
