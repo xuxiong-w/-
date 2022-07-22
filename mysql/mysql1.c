@@ -14,17 +14,18 @@
 #include <semaphore.h>
 
 /*定义一些数据库连接需要的宏*/
-#define HOST "124.222.112.2" /*MySql服务器地址*/
+#define HOST "localhost" /*MySql服务器地址*/
+//#define HOST "localhost" /*MySql服务器地址*/
 #define USERNAME "root" /*用户名*/
-#define PASSWORD "123456" /*数据库连接密码*/
-#define DATABASE "data_base" /*需要连接的数据库*/
+#define PASSWORD "links" /*数据库连接密码*/
+#define DATABASE "database_ws" /*需要连接的数据库*/
 
 MYSQL my_connection;
 static int  line_num=2; //同时两个线程
 //pthread_mutex_t mutex;
 sem_t first;
 sem_t second;
-struct timeval t1,t2,t3,t4;
+struct timeval t1,t2,t3,t4,t5,t6;
 
 // 执行sql语句的函数
 void exeSql(char* sql);
@@ -99,6 +100,7 @@ void *updateSql(void *addr){
         exeSql(s);
         gettimeofday(&t2,NULL);
         printf("%ld\n",(t2.tv_sec-t1.tv_sec)*1000000 + t2.tv_usec-t1.tv_usec);
+        printf("%ld\n",(t6.tv_sec-t5.tv_sec)*1000000 + t6.tv_usec-t5.tv_usec);
         printf("No.%d:  %s command finished!\n",num,s);
         num++;
         //pthread_mutex_unlock(&mutex);
@@ -125,6 +127,7 @@ void *selectSql(void *addr){
         exeSql(s);
         gettimeofday(&t4,NULL);
         printf("%ld\n",(t4.tv_sec-t3.tv_sec)*1000000 + t4.tv_usec-t3.tv_usec);
+        printf("%ld\n",(t6.tv_sec-t5.tv_sec)*1000000 + t6.tv_usec-t5.tv_usec);
         printf("No.%d:  %s command finished!\n",num,s);
         num++;
         //pthread_mutex_unlock(&mutex);
@@ -137,7 +140,9 @@ void exeSql(char* sql){
     MYSQL_RES* res_ptr; /*执行结果*/
     MYSQL_ROW result_row; /*按行返回查询信息*/
     unsigned long row, column; /* 定义行数,列数*/
+    gettimeofday(&t5,NULL);
     res = mysql_query(&my_connection, sql);
+    gettimeofday(&t6,NULL);
     if (res) {
         /*现在就代表执行失败了*/
         printf("Error： mysql_query !\n");
