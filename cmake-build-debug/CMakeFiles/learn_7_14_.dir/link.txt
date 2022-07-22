@@ -1,0 +1,1 @@
+/usr/bin/cc  -pthread -g CMakeFiles/learn_7_14_.dir/mysql.c.o -o learn_7_14_  -lmysqlclient -lmysqlclient 

@@ -1,0 +1,1 @@
+/usr/bin/cc -g CMakeFiles/test1.dir/mysql/test1.c.o -o test1  -lmysqlclient 

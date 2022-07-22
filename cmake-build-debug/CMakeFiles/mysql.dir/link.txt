@@ -1,0 +1,1 @@
+/usr/bin/cc  -pthread -g CMakeFiles/mysql.dir/mysql.c.o -o mysql  -lmysqlclient 
