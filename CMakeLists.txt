@@ -11,28 +11,9 @@ link_libraries(mysqlclient)
 include_directories(mysql)
 include_directories(mysql/mysql)
 
-
-add_executable(learn_7_14_
-        mysql/mysql/client_plugin.h
-        mysql/mysql/plugin_auth_common.h
-        mysql/mysql/udf_registration_types.h
-        mysql/errmsg.h
-        mysql/field_types.h
-        mysql/my_command.h
-        mysql/my_compress.h
-        mysql/my_list.h
-        #mysql/mysql.c
-        mysql/mysql1.c
-        #mysql/mysql2.c
-        mysql/mysql.h
-        mysql/mysql_com.h
-        mysql/mysql_time.h
-        mysql/mysql_version.h
-        mysql/mysqld_error.h
-        mysql/mysqlx_ername.h
-        mysql/mysqlx_error.h
-        mysql/mysqlx_version.h)
+add_executable(learn_7_14_ mysql.c)
 
 target_link_libraries(learn_7_14_  mysqlclient)
 #find_package(Threads REQUIRED)
 #target_link_libraries(learn_7_14_ Threads::Threads)
+#add_executable(learn_7_14_ mysql.c)

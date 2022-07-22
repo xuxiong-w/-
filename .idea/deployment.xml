@@ -2,6 +2,17 @@
 <project version="4">
   <component name="PublishConfigData" remoteFilesAllowedToDisappearOnAutoupload="false">
     <serverData>
+      <paths name="远程主机 (1) (ee2ecc70-4408-46ae-9736-b4119bdc69a7)">
+        <serverdata>
+          <mappings>
+            <mapping deploy="/tmp/tmp.G7vvE406l7" local="$PROJECT_DIR$" />
+          </mappings>
+          <excludedPaths>
+            <excludedPath local="true" path="$PROJECT_DIR$/cmake-build-debug" />
+            <excludedPath local="true" path="$PROJECT_DIR$/cmake-build-debug" />
+          </excludedPaths>
+        </serverdata>
+      </paths>
       <paths name="远程主机 (966756af-9882-4e33-a46c-2fce8d611f79)">
         <serverdata>
           <mappings>
